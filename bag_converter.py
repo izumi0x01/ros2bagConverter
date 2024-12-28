@@ -43,20 +43,18 @@ class BagConverter:
             i = 0
         return dict(items) 
     
-    def extractDataFromDB(self):
+    def _extractDataFromDB(self):
 
         self.cursor.execute('SELECT * from({})'.format('topics'))
         topicRecords = self.cursor.fetchall()
-        print(topicRecords)
         self.cursor.execute('SELECT * from({})'.format('messages'))
         messageRecords = self.cursor.fetchall()
         
-        topicList = []
+        topicDict = {}
         for topic_row in topicRecords:    
             topicID = topic_row[0]
             topicName = topic_row[1]
             topicType = topic_row[2]
-            print(topicType)
 
             dataList = []
             for message_row in messageRecords:
@@ -72,16 +70,19 @@ class BagConverter:
                   rowDataDic = message_converter.convert_ros_message_to_dictionary(deserializedRowData)
                   flattenDict = self.__flatten_dict(rowDataDic)
                   dataList.append(flattenDict)
-                  flattenDict['topic_name'] = topicName
-                  #print(flattenDict)
                 except Exception as e:
-                  continue
-                #print(dic_data)    
+                  continue  
 
-            df = pd.DataFrame(dataList)
-            last_col = df.columns[-1]
-            df.insert(0, last_col, df.pop(last_col))
-        #    print(df)
-            topicList.append(df)
+            _topicName = str(topicName)
+            topicDict[_topicName] =  dataList
 
-        return topicList
+        return topicDict
+
+    def getTopicDataWithPandas(self, topicName):
+        topicDict = self._extractDataFromDB()
+        if topicName in topicDict.keys():
+            df = pd.DataFrame(topicDict[topicName])
+            return df
+        else:
+            print("Topic not found")
+            exit(1)
