@@ -73,7 +73,7 @@ class BagConverter:
                   flattenDict = self.__flatten_dict(rowDataDic)
                   _tmpDict = {}
                   _tmpDict['row_time'] = self._calcDataTime(timeStamps)
-                  _tmpDict['millis_time'] = self._calcMilliSeconds(timeStamps, messageRecords[0][2])
+                  _tmpDict['msec'] = self._calcMilliSeconds(timeStamps, messageRecords[0][2])
                   _tmpDict.update(flattenDict)
                   dataList.append(_tmpDict)
 

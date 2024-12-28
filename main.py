@@ -13,19 +13,18 @@ if __name__ == "__main__":
         exit(1)
     else:
         bag_file = args[1]
+
     bag_converter.connectDB(bag_file)
-    res = bag_converter.extractDataFromDB()
-    bag_converter.closeDB()
-
-# 行数、列数の表示制限を解除
-    res.set_option('display.max_rows', None)  # 行数制限を解除
-    res.set_option('display.max_columns', None)  # 列数制限を解除
-    print(res[1])
-    plt.plot(res[1]['header_stamp_secs'], res[1]['wrench_force_z'])
-    plt.grid(True)
+    res = bag_converter.getTopicDataWithPandas("/sg/pressure")
+    print(res)
+    plt.plot(res['msec'], res['data'])
     plt.show()
-    
+    res = bag_converter.getTopicDataWithPandas("/sg/wrench")
+    print(res)
+    plt.plot(res['msec'], res['wrench_force_z'])
+    plt.show()
 
+    bag_converter.closeDB()
 
 
         
