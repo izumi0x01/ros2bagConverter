@@ -5,6 +5,7 @@ from rclpy.serialization import deserialize_message
 from rosidl_runtime_py.utilities import get_message
 from rclpy.serialization import deserialize_message
 import pandas as pd
+import time
 
 
 class BagConverter:
@@ -61,6 +62,7 @@ class BagConverter:
                 topicTypeClassName = get_message(topicType)
                 rowDatas = message_row[3]
                 messageID = message_row[1]
+                timeStamps = message_row[2]
                 
                 if messageID != topicID:
                     continue
@@ -69,7 +71,12 @@ class BagConverter:
                   deserializedRowData = deserialize_message(rowDatas, topicTypeClassName)
                   rowDataDic = message_converter.convert_ros_message_to_dictionary(deserializedRowData)
                   flattenDict = self.__flatten_dict(rowDataDic)
-                  dataList.append(flattenDict)
+                  _tmpDict = {}
+                  _tmpDict['row_time'] = self._calcDataTime(timeStamps)
+                  _tmpDict['millis_time'] = self._calcMilliSeconds(timeStamps, messageRecords[0][2])
+                  _tmpDict.update(flattenDict)
+                  dataList.append(_tmpDict)
+
                 except Exception as e:
                   continue  
 
@@ -77,6 +84,19 @@ class BagConverter:
             topicDict[_topicName] =  dataList
 
         return topicDict
+    
+    def _calcDataTime(self, timeStamps):
+        row_time = "{}.{}".format(
+            time.strftime(
+                "%Y/%m/%d %H:%M:%S", time.localtime(timeStamps / 1000 / 1000 / 1000)
+            ),
+            timeStamps % (1000 * 1000 * 1000),
+        )
+        return row_time
+    
+    def _calcMilliSeconds(self, timeStamps, zeroIndexTimeStamp):
+        return (timeStamps - zeroIndexTimeStamp) / 1000000
+        
 
     def getTopicDataWithPandas(self, topicName):
         topicDict = self._extractDataFromDB()
