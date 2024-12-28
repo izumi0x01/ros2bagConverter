@@ -14,7 +14,8 @@ if __name__ == "__main__":
     else:
         bag_file = args[1]
 
-    bag_converter.connectDB(bag_file)
+    path = "./bag/sg_exp/sg_exp_0.db3"
+    bag_converter.connectDB(path)
     res = bag_converter.getTopicDataWithPandas("/sg/pressure")
     print(res)
     plt.plot(res['msec'], res['data'])
