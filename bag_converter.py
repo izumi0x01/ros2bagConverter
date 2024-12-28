@@ -47,27 +47,33 @@ class BagConverter:
 
         self.cursor.execute('SELECT * from({})'.format('topics'))
         topicRecords = self.cursor.fetchall()
-
+        print(topicRecords)
         self.cursor.execute('SELECT * from({})'.format('messages'))
         messageRecords = self.cursor.fetchall()
         
         topicList = []
         for topic_row in topicRecords:    
+            topicID = topic_row[0]
             topicName = topic_row[1]
             topicType = topic_row[2]
             print(topicType)
 
             dataList = []
             for message_row in messageRecords:
-                _type = get_message(topicType)
-                _msgs = message_row[3]
+                topicTypeClassName = get_message(topicType)
+                rowDatas = message_row[3]
+                messageID = message_row[1]
+                
+                if messageID != topicID:
+                    continue
+
                 try:
-                  _dmsg = deserialize_message(_msgs, _type)
-                  dic_data = message_converter.convert_ros_message_to_dictionary(_dmsg)
-                  _res = self.__flatten_dict(dic_data)
-                  dataList.append(_res)
-                  _res['topic_name'] = topicName
-                  #print(_res)
+                  deserializedRowData = deserialize_message(rowDatas, topicTypeClassName)
+                  rowDataDic = message_converter.convert_ros_message_to_dictionary(deserializedRowData)
+                  flattenDict = self.__flatten_dict(rowDataDic)
+                  dataList.append(flattenDict)
+                  flattenDict['topic_name'] = topicName
+                  #print(flattenDict)
                 except Exception as e:
                   continue
                 #print(dic_data)    
@@ -78,5 +84,4 @@ class BagConverter:
         #    print(df)
             topicList.append(df)
 
-        print(topicList[1])
         return topicList
