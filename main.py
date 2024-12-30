@@ -7,12 +7,6 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     bag_converter = bag_converter.BagConverter()
-    args = sys.argv
-    if len(args) < 2:
-        print("Usage: python3 bag_converter.py <bag_file>")
-        exit(1)
-    else:
-        bag_file = args[1]
 
     path = "./bag/sg_exp/sg_exp_0.db3"
     bag_converter.connectDB(path)
@@ -27,6 +21,3 @@ if __name__ == "__main__":
 
     bag_converter.closeDB()
 
-
-        
-        

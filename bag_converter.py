@@ -57,6 +57,7 @@ class BagConverter:
             topicName = topic_row[1]
             topicType = topic_row[2]
 
+
             dataList = []
             for message_row in messageRecords:
                 topicTypeClassName = get_message(topicType)
@@ -106,3 +107,5 @@ class BagConverter:
         else:
             print("Topic not found")
             exit(1)
+
+
