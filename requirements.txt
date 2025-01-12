@@ -1,0 +1,25 @@
+# basic libraries for ros2
+numpy<2.0 # downgrade for rqt plugin
+scipy
+pandas
+opencv-python
+rosbags
+
+# for rqt plot
+matplotlib
+pyqtgraph
+pyQt5
+
+# for machine learning
+# 2022/12/11 version torch for torch 1.13.0 and cuda 11.7
+#torch
+#torchvision
+#torchaudio
+#tqdm
+
+# sklearn
+#scikit-learn
+
+# optuna
+#optuna
+#cmaes
